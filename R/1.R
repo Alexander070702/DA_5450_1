@@ -20,9 +20,20 @@ summary(lm1)
 lm2 <- lm(Apps ~ Private + Accept + Enroll + Top10perc + Top25perc + F.Undergrad + Outstate + Room.Board + Books + Personal + PhD + Terminal + S.F.Ratio + perc.alumni + Expend, data = College)
 summary(lm2)
 
-# Model 3: Perform stepwise variable selection
-lm3 <- step(lm1)
-summary(lm3)
+# Model 3: Perform stepwise selection using AIC as the selection criterion
+stepwise.model <- step(lm(Apps ~ ., data = College), direction = "both", trace = FALSE)
+
+# Evaluate the final model's goodness of fit
+par(mfrow=c(2,2))
+plot(stepwise.model)
+
+# Identify significant predictors
+sig_preds <- names(which(summary(stepwise.model)$coefficients[,4] < 0.05))
+
+# Interpret the coefficients
+coeffs <- coef(stepwise.model)
+cat("Top10perc coefficient:", coeffs["Top10perc"], "\n")
+cat("Private coefficient:", coeffs["Private"], "\n")
 
 # In-sample comparison of models
 library("caret")
@@ -45,7 +56,21 @@ lm3.fit <- lm(Apps ~ Private + Accept + Enroll + Top10perc + Top25perc + F.Under
 lm1.pred <- predict(lm1.fit, newdata = test.data)
 lm2.pred <- predict(lm2.fit, newdata = test.data)
 lm3.pred <- predict(lm3.fit, newdata = test.data)
-caret::RMSE(lm1.pred, test.data$Apps)
-caret::RMSE(lm2.pred, test.data$Apps)
-caret::RMSE(lm3.pred, test.data$Apps)
 
+# Calculate training MSE
+train.mse <- c(mean((predict(lm1.fit, newdata = train.data) - train.data$Apps)^2),
+               mean((predict(lm2.fit, newdata = train.data) - train.data$Apps)^2),
+               mean((predict(lm3.fit, newdata = train.data) - train.data$Apps)^2))
+cat("Training MSE:", train.mse, "\n")
+
+# Calculate test MSE
+test.mse <- c(mean((lm1.pred - test.data$Apps)^2),
+              mean((lm2.pred - test.data$Apps)^2),
+              mean((lm3.pred - test.data$Apps)^2))
+cat("Test MSE:", test.mse, "\n")
+
+# Find index of the model with smallest test MSE
+best.model.index <- which.min(test.mse)
+
+# Output the best model
+cat("Model", best.model.index, "is the best with a test MSE of", test.mse[best.model.index], "\n")
