@@ -45,7 +45,7 @@ lm3.fit <- lm(Apps ~ Private + Accept + Enroll + Top10perc + Top25perc + F.Under
 lm1.pred <- predict(lm1.fit, newdata = test.data)
 lm2.pred <- predict(lm2.fit, newdata = test.data)
 lm3.pred <- predict(lm3.fit, newdata = test.data)
-mse(lm1.pred, test.data$Apps)
-mse(lm2.pred, test.data$Apps)
-mse(lm3.pred, test.data$Apps)
+caret::RMSE(lm1.pred, test.data$Apps)
+caret::RMSE(lm2.pred, test.data$Apps)
+caret::RMSE(lm3.pred, test.data$Apps)
 
