@@ -36,6 +36,7 @@ cat("Top10perc coefficient:", coeffs["Top10perc"], "\n")
 cat("Private coefficient:", coeffs["Private"], "\n")
 
 # In-sample comparison of models
+library("caret")
 train.control <- trainControl(method = "cv", number = 5)
 mse1 <- train(Apps ~ ., data = College, method = "lm", trControl = train.control)
 mse2 <- train(Apps ~ Private + Accept + Enroll + Top10perc + Top25perc + F.Undergrad + Outstate + Room.Board + Books + Personal + PhD + Terminal + S.F.Ratio + perc.alumni + Expend, data = College, method = "lm", trControl = train.control)
