@@ -1,0 +1,121 @@
+---
+title: 'Data Analytics: Assignment 1 (Group 4)'
+output:
+  html_document:
+    df_print: paged
+---
+
+### Load the data
+
+```{r}
+if (!require("ISLR")) install.packages("ISLR")
+library("ISLR")
+data("College")
+```
+
+### Task 1: Descriptive statistics and visualization
+
+```{r}
+summary(College)
+str(College)
+cor(College[, -1])
+pairs(College[, -1])
+```
+
+#### Check for missing data
+```{r}
+sum(is.na(College))
+```
+### Task 2: Linear regression using *all* variables
+#### Model 1: Fit a linear regression model using all variables
+```{r}
+lm1 <- lm(Apps ~ ., data = College)
+summary(lm1)
+```
+### Task 3: Linear regression using *meaningfull* variables
+#### Model 2: Fit a linear regression model using selected variables
+```{r}
+lm2 <- lm(Apps ~ Private + Accept + Enroll + Top10perc + Top25perc + F.Undergrad + Outstate + Room.Board + Books + Personal + PhD + Terminal + S.F.Ratio + perc.alumni + Expend, data = College)
+summary(lm2)
+```
+### Task 4: Stepwise variable selection
+#### Model 3: Perform stepwise selection using AIC as the selection criterion
+```{r}
+stepwise.model <- step(lm(Apps ~ ., data = College), direction = "both", trace = FALSE)
+```
+#### Evaluate the final model's goodness of fit
+```{r}
+par(mfrow=c(2,2))
+plot(stepwise.model)
+```
+#### Identify significant predictors
+```{r}
+sig_preds <- names(which(summary(stepwise.model)$coefficients[,4] < 0.05))
+```
+
+#### Interpret the coefficients
+```{r}
+coeffs <- coef(stepwise.model)
+cat("Top10perc coefficient:", coeffs["Top10perc"], "\n")
+cat("Private coefficient:", coeffs["Private"], "\n")
+```
+
+### Task 5: In-sample comparison of model 1,2 and 3
+```{r}
+library("caret")
+train.control <- trainControl(method = "cv", number = 5)
+mse1 <- train(Apps ~ ., data = College, method = "lm", trControl = train.control)
+mse2 <- train(Apps ~ Private + Accept + Enroll + Top10perc + Top25perc + F.Undergrad + Outstate + Room.Board + Books + Personal + PhD + Terminal + S.F.Ratio + perc.alumni + Expend, data = College, method = "lm", trControl = train.control)
+mse3 <- train(Apps ~ Private + Accept + Enroll + Top10perc + Top25perc + F.Undergrad + Outstate + Room.Board + Books + Personal + PhD + Terminal + S.F.Ratio, data = College, method = "lm", trControl = train.control)
+mse1$results$RMSE
+mse2$results$RMSE
+mse3$results$RMSE
+```
+
+### Task 6: Out-of-sample comparison of model 1,2 and 3
+```{r}
+set.seed(123)
+train.index <- createDataPartition(College$Apps, p = 0.8, list = FALSE)
+train.data <- College[train.index, ]
+test.data <- College[-train.index, ]
+lm1.fit <- lm(Apps ~ ., data = train.data)
+lm2.fit <- lm(Apps ~ Private + Accept + Enroll + Top10perc + Top25perc + F.Undergrad + Outstate + Room.Board + Books + Personal + PhD + Terminal + S.F.Ratio + perc.alumni + Expend, data = train.data)
+lm3.fit <- lm(Apps ~ Private + Accept + Enroll + Top10perc + Top25perc + F.Undergrad + Outstate + Room.Board + Books + Personal + PhD + Terminal + S.F.Ratio, data = train.data)
+lm1.pred <- predict(lm1.fit, newdata = test.data)
+lm2.pred <- predict(lm2.fit, newdata = test.data)
+lm3.pred <- predict(lm3.fit, newdata = test.data)
+```
+#### Calculate training MSE
+```{r}
+train.mse <- c(mean((predict(lm1.fit, newdata = train.data) - train.data$Apps)^2),
+               mean((predict(lm2.fit, newdata = train.data) - train.data$Apps)^2),
+               mean((predict(lm3.fit, newdata = train.data) - train.data$Apps)^2))
+cat("Training MSE:", train.mse, "\n")
+```
+
+#### Calculate test MSE
+```{r}
+test.mse <- c(mean((lm1.pred - test.data$Apps)^2),
+              mean((lm2.pred - test.data$Apps)^2),
+              mean((lm3.pred - test.data$Apps)^2))
+cat("Test MSE:", test.mse, "\n")
+```
+
+#### Find index of the model with smallest test MSE
+```{r}
+best.model.index <- which.min(test.mse)
+
+```
+
+#### Output the best model
+```{r}
+cat("Model", best.model.index, "is the best with a test MSE of", test.mse[best.model.index], "\n")
+```
+
+#### 
+```{r}
+
+```
+
+
+
