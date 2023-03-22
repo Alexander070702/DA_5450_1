@@ -19,7 +19,21 @@ data("College")
 summary(College)
 str(College)
 cor(College[, -1])
-pairs(College[, -1])
+library(ggplot2)
+
+# Subset of variables to plot
+cols <- c("Private", "Apps", "Accept", "Enroll", "Top10perc", "Top25perc", "F.Undergrad", "P.Undergrad")
+
+# Create scatterplots for all pairs of variables
+for (i in 1:(length(cols) - 1)) {
+  for (j in (i+1):length(cols)) {
+    plot_data <- College[, c(cols[i], cols[j])]
+    plot <- ggplot(plot_data, aes(x = plot_data[,1], y = plot_data[,2])) +
+      geom_point() +
+      ggtitle(paste("Scatterplot of", cols[i], "and", cols[j]))
+    print(plot)
+  }
+}
 ```
 
 #### Check for missing data
