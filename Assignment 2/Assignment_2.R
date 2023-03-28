@@ -11,7 +11,7 @@ churndat$voicemailplan <- ifelse(churndat$voicemailplan == "yes", 1, 0)
 
 #2
 set.seed(123)
-train.index <- createDataPartition(churndat$churn, p = 0.8, list = FALSE)
+train_index <- createDataPartition(churndat$churn, p = 0.8, list = FALSE)
 train <- churndat[train_index, ]
 test <- churndat[-train_index, ]
 
@@ -22,3 +22,4 @@ summary(mlm)
 #4
 mlm_step = step(mlm, direction = "both", trace = FALSE)
 summary(mlm_step)
+
