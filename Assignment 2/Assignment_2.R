@@ -37,7 +37,7 @@ ggplot(churndat, aes(x = numbercustomerservicecalls, fill = factor(churn))) + ge
 # There seems to be a relationship with churn and international plan. If the user has no International plan the churn rate is way lower compared to users with an international plan
 # It is the opposite with the Voicemail Plan, if the user has one the churn rate is lower.
 # Also with a rising number of customer service calls the churn rate seems to go up. 
-# For all the other variables it is difficult to tell and there seems to be no real correlation. 
+# For all the other variables it is difficult to tell and there seems to be no real correlation at first sight. 
 
 
 # 2 Splitting the data to training set and test set
