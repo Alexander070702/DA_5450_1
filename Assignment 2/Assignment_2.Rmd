@@ -156,26 +156,42 @@ fit_nb
 ### Task 7: Comparing the different methods
 
 ```{r}
-# Predict churn using the k-NN model
-library(class)
-knn_pred <- knn(train[,c("internationalplan", "voicemailplan", "numbercustomerservicecalls", "totalintlcalls", "numbervmailmessages")], test[,c("internationalplan", "voicemailplan", "numbercustomerservicecalls", "totalintlcalls", "numbervmailmessages")], train$churn, k=5)
-knn_cm <- table(test$churn, knn_pred)
-knn_accuracy <- sum(diag(knn_cm))/sum(knn_cm)
+# k-NN model
+knn_pred <- predict(logFit, newdata = test)
 
-# Predict churn using the Naive Bayes model
+# Naive Bayes model
 nb_pred <- predict(fit_nb, newdata = test)
-nb_cm <- table(test$churn, nb_pred)
-nb_accuracy <- sum(diag(nb_cm))/sum(nb_cm)
 
-# Calculate accuracy, sensitivity, and specificity of the stepwise logistic regression model
-test$prob_churn_step <- predict(mlm_step, newdata = test, type = "response")
-test$class_churn_step <- ifelse(test$prob_churn_step > 0.5, 1, 0)
-accuracy_step <- sum(test$class_churn_step == test$churn) / nrow(test)
-sensitivity_step <- sum(test$class_churn_step[test$churn == 1] == 1) / sum(test$churn == 1)
-specificity_step <- sum(test$class_churn_step[test$churn == 0] == 0) / sum(test$churn == 0)
+# Confusion matrix for stepwise logistic regression model
+library(caret)
+conf_mat_lr <- confusionMatrix(as.factor(test$class_churn_step), as.factor(test$churn))
+acc_lr <- conf_mat_lr$overall['Accuracy']
+rec_lr <- conf_mat_lr$byClass['Sensitivity']
+prec_lr <- conf_mat_lr$byClass['Pos Pred Value']
 
-# Print the evaluation metrics
-cat("Stepwise logistic regression model: Accuracy=", round(accuracy_step, 4), " Sensitivity=", round(sensitivity_step, 4), " Specificity=", round(specificity_step, 4), "\n")
-cat("k-NN model: Accuracy=", round(knn_accuracy, 4), " Sensitivity=", round(knn_cm[2,2]/sum(knn_cm[2,]), 4), " Specificity=", round(knn_cm[1,1]/sum(knn_cm[1,]), 4), "\n")
-cat("Naive Bayes model: Accuracy=", round(nb_accuracy, 4), " Sensitivity=", round(nb_cm[2,2]/sum(nb_cm[2,]), 4), " Specificity=", round(nb_cm[1,1]/sum(nb_cm[1,]), 4), "\n")
+# Confusion matrix for k-NN model
+conf_mat_knn <- confusionMatrix(as.factor(knn_pred), as.factor(test$churn))
+acc_knn <- conf_mat_knn$overall['Accuracy']
+rec_knn <- conf_mat_knn$byClass['Sensitivity']
+prec_knn <- conf_mat_knn$byClass['Pos Pred Value']
+
+# Confusion matrix for Naive Bayes model
+conf_mat_nb <- confusionMatrix(as.factor(nb_pred), as.factor(test$churn))
+acc_nb <- conf_mat_nb$overall['Accuracy']
+rec_nb <- conf_mat_nb$byClass['Sensitivity']
+prec_nb <- conf_mat_nb$byClass['Pos Pred Value']
+
+# We can now print out the results:
+cat("Accuracy of stepwise logistic regression model: ", round(acc_lr, 4), "\n")
+cat("Recall of stepwise logistic regression model: ", round(rec_lr, 4), "\n")
+cat("Precision of stepwise logistic regression model: ", round(prec_lr, 4), "\n\n")
+
+cat("Accuracy of k-NN model: ", round(acc_knn, 4), "\n")
+cat("Recall of k-NN model: ", round(rec_knn, 4), "\n")
+cat("Precision of k-NN model: ", round(prec_knn, 4), "\n\n")
+
+cat("Accuracy of Naive Bayes model: ", round(acc_nb, 4), "\n")
+cat("Recall of Naive Bayes model: ", round(rec_nb, 4), "\n")
+cat("Precision of Naive Bayes model: ", round(prec_nb, 4), "\n")
 ```
+Based on the results, we can see that the stepwise logistic regression model and the Naive Bayes model have similar accuracy, recall, and precision, while the k-NN model has lower accuracy and recall but higher precision. It's worth noting that the choice of the best model ultimately depends on the specific requirements and objectives of the classification problem.
