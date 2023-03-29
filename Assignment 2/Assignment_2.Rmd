@@ -117,13 +117,27 @@ Calculate the predicted probabilities and predicted classes of the testing data 
 test$prob_churn_step <- predict(mlm_step, newdata = test, type = "response")
 test$class_churn_step <- ifelse(test$prob_churn_step > 0.5, 1, 0)
 ```
-
-Calculate the accuracy, sensitivity, and specificity of the stepwise logistic regression model on the testing data
-
 ```{r}
-accuracy_step <- sum(test$class_churn_step == test$churn) / nrow(test)
-sensitivity_step <- sum(test$class_churn_step[test$churn == 1] == 1) / sum(test$churn == 1)
-specificity_step <- sum(test$class_churn_step[test$churn == 0] == 0) / sum(test$churn == 0)
+# Calculate the predicted probabilities and predicted classes of the testing data using the stepwise logistic regression model
+test$prob_churn_step <- predict(mlm_step, newdata = test, type = "response")
+test$class_churn_step <- ifelse(test$prob_churn_step > 0.5, 1, 0)
+
+# Calculate the confusion matrix and extract the true positive, false positive, true negative, and false negative counts
+confusion <- table(test$churn, test$class_churn_step)
+tp <- confusion[2,2]
+fp <- confusion[1,2]
+tn <- confusion[1,1]
+fn <- confusion[2,1]
+
+# Calculate the accuracy, recall, and precision of the stepwise logistic regression model on the testing data
+accuracy_step <- sum(diag(confusion)) / sum(confusion)
+recall_step <- tp / (tp + fn)
+precision_step <- tp / (tp + fp)
+
+# Print the accuracy, recall, and precision of the stepwise logistic regression model on the testing data
+cat("Accuracy: ", round(accuracy_step, 4), "\n")
+cat("Recall: ", round(recall_step, 4), "\n")
+cat("Precision: ", round(precision_step, 4), "\n")
 ```
 
 Print the accuracy, sensitivity, and specificity of the stepwise logistic regression model on the testing data
