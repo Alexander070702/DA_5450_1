@@ -98,7 +98,7 @@ The significant variables in this model are: <b>internationalplan</b>, <b>voicem
 Perform stepwise variable selection on the logistic regression model using both forward and backward selection The 'trace' argument controls the amount of output produced during the stepwise procedure
 
 ```{r}
-mlm_step <- step(mlm, direction = "both", trace = FALSE)
+mlm_step <- stepAIC(mlm, direction = "both", trace = FALSE)
 ```
 
 Print a summary of the stepwise logistic regression model
