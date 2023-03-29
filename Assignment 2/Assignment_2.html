@@ -523,9 +523,6 @@ correlation between minutes talked and probability of leaving the
 company. Similarly, the coefficient of voicemailplan suggests a positive
 correlation between having a plan including a voicemail and the
 probability of leaving the company.</p>
-</div>
-<div id="task-5-k-nn-modell-using-5-fold-cross-validation" class="section level3">
-<h3>Task 5: k-NN modell using 5 fold cross-validation</h3>
 <p>Calculate the predicted probabilities and predicted classes of the
 testing data using the stepwise logistic regression model</p>
 <pre class="r"><code>test$prob_churn_step &lt;- predict(mlm_step, newdata = test, type = &quot;response&quot;)
@@ -543,6 +540,40 @@ logistic regression model on the testing data</p>
 <pre><code>## Sensitivity:  0.2197</code></pre>
 <pre class="r"><code>cat(&quot;Specificity: &quot;, round(specificity_step, 4), &quot;\n&quot;)</code></pre>
 <pre><code>## Specificity:  0.977</code></pre>
+</div>
+<div id="task-5-k-nn-modell-using-5-fold-cross-validation" class="section level3">
+<h3>Task 5: k-NN modell using 5 fold cross-validation</h3>
+<pre class="r"><code>fitControl &lt;- trainControl(method = &quot;cv&quot;, number = 5)
+
+logFit &lt;- train(as.factor(churn) ~ scale(accountlength) + internationalplan + voicemailplan + scale(totalintlcharge) + scale(numbervmailmessages) + scale(totaldayminutes) + scale(totaldaycharge) + scale(totalevecalls) + scale(totaleveminutes) + scale(totalnightminutes) + scale(totalintlminutes) + 
+scale(totalintlcalls) + scale(numbercustomerservicecalls) + scale(totalnightcharge) + scale(totaldaycalls) + scale(totalevecharge) + scale(totalnightcalls),data = train, method= &quot;knn&quot;, tuneGrid = data.frame(k = 1:10), trControl = fitControl)
+
+logFit</code></pre>
+<pre><code>## k-Nearest Neighbors 
+## 
+## 4000 samples
+##   17 predictor
+##    2 classes: &#39;0&#39;, &#39;1&#39; 
+## 
+## No pre-processing
+## Resampling: Cross-Validated (5 fold) 
+## Summary of sample sizes: 3200, 3200, 3200, 3200, 3200 
+## Resampling results across tuning parameters:
+## 
+##   k   Accuracy  Kappa    
+##    1  0.85425   0.3296702
+##    2  0.85125   0.3169456
+##    3  0.88300   0.3651291
+##    4  0.88325   0.3615788
+##    5  0.88675   0.3519272
+##    6  0.88525   0.3405273
+##    7  0.88375   0.3130464
+##    8  0.88550   0.3283657
+##    9  0.88325   0.3010977
+##   10  0.88200   0.2893749
+## 
+## Accuracy was used to select the optimal model using the largest value.
+## The final value used for the model was k = 5.</code></pre>
 </div>
 <div id="task-6-naive-bayes-model-estemated-on-training-sample" class="section level3">
 <h3>Task 6: Naive Bayes model estemated on training sample</h3>
@@ -586,6 +617,34 @@ fit_nb</code></pre>
 ## Y       [,1]     [,2]
 ##   0 8.474161 13.95292
 ##   1 4.827826 11.73101</code></pre>
+</div>
+<div id="task-7-comparing-the-different-methods" class="section level3">
+<h3>Task 7: Comparing the different methods</h3>
+<pre class="r"><code># Predict churn using the k-NN model
+library(class)
+knn_pred &lt;- knn(train[,c(&quot;internationalplan&quot;, &quot;voicemailplan&quot;, &quot;numbercustomerservicecalls&quot;, &quot;totalintlcalls&quot;, &quot;numbervmailmessages&quot;)], test[,c(&quot;internationalplan&quot;, &quot;voicemailplan&quot;, &quot;numbercustomerservicecalls&quot;, &quot;totalintlcalls&quot;, &quot;numbervmailmessages&quot;)], train$churn, k=5)
+knn_cm &lt;- table(test$churn, knn_pred)
+knn_accuracy &lt;- sum(diag(knn_cm))/sum(knn_cm)
+
+# Predict churn using the Naive Bayes model
+nb_pred &lt;- predict(fit_nb, newdata = test)
+nb_cm &lt;- table(test$churn, nb_pred)
+nb_accuracy &lt;- sum(diag(nb_cm))/sum(nb_cm)
+
+# Calculate accuracy, sensitivity, and specificity of the stepwise logistic regression model
+test$prob_churn_step &lt;- predict(mlm_step, newdata = test, type = &quot;response&quot;)
+test$class_churn_step &lt;- ifelse(test$prob_churn_step &gt; 0.5, 1, 0)
+accuracy_step &lt;- sum(test$class_churn_step == test$churn) / nrow(test)
+sensitivity_step &lt;- sum(test$class_churn_step[test$churn == 1] == 1) / sum(test$churn == 1)
+specificity_step &lt;- sum(test$class_churn_step[test$churn == 0] == 0) / sum(test$churn == 0)
+
+# Print the evaluation metrics
+cat(&quot;Stepwise logistic regression model: Accuracy=&quot;, round(accuracy_step, 4), &quot; Sensitivity=&quot;, round(sensitivity_step, 4), &quot; Specificity=&quot;, round(specificity_step, 4), &quot;\n&quot;)</code></pre>
+<pre><code>## Stepwise logistic regression model: Accuracy= 0.877  Sensitivity= 0.2197  Specificity= 0.977</code></pre>
+<pre class="r"><code>cat(&quot;k-NN model: Accuracy=&quot;, round(knn_accuracy, 4), &quot; Sensitivity=&quot;, round(knn_cm[2,2]/sum(knn_cm[2,]), 4), &quot; Specificity=&quot;, round(knn_cm[1,1]/sum(knn_cm[1,]), 4), &quot;\n&quot;)</code></pre>
+<pre><code>## k-NN model: Accuracy= 0.878  Sensitivity= 0.2045  Specificity= 0.9804</code></pre>
+<pre class="r"><code>cat(&quot;Naive Bayes model: Accuracy=&quot;, round(nb_accuracy, 4), &quot; Sensitivity=&quot;, round(nb_cm[2,2]/sum(nb_cm[2,]), 4), &quot; Specificity=&quot;, round(nb_cm[1,1]/sum(nb_cm[1,]), 4), &quot;\n&quot;)</code></pre>
+<pre><code>## Naive Bayes model: Accuracy= 0.853  Sensitivity= 0.3636  Specificity= 0.9274</code></pre>
 </div>
 
 

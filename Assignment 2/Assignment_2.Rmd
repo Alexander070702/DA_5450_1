@@ -77,8 +77,6 @@ Variables in the final model are : accountlength, internationalplan, voicemailpl
 
 The coefficient of totaldayminutes suggests that there is a positive correlation between minutes talked and probability of leaving the company. Similarly, the coefficient of voicemailplan suggests a positive correlation between having a plan including a voicemail and the probability of leaving the company.
 
-### Task 5: k-NN modell using 5 fold cross-validation
-
 Calculate the predicted probabilities and predicted classes of the testing data using the stepwise logistic regression model
 
 ```{r}
@@ -100,6 +98,17 @@ Print the accuracy, sensitivity, and specificity of the stepwise logistic regres
 cat("Accuracy: ", round(accuracy_step, 4), "\n")
 cat("Sensitivity: ", round(sensitivity_step, 4), "\n")
 cat("Specificity: ", round(specificity_step, 4), "\n")
+```
+### Task 5: k-NN modell using 5 fold cross-validation
+
+```{r}
+fitControl <- trainControl(method = "cv", number = 5)
+
+logFit <- train(as.factor(churn) ~ scale(accountlength) + internationalplan + voicemailplan + scale(totalintlcharge) + scale(numbervmailmessages) + scale(totaldayminutes) + scale(totaldaycharge) + scale(totalevecalls) + scale(totaleveminutes) + scale(totalnightminutes) + scale(totalintlminutes) + 
+scale(totalintlcalls) + scale(numbercustomerservicecalls) + scale(totalnightcharge) + scale(totaldaycalls) + scale(totalevecharge) + scale(totalnightcalls),data = train, method= "knn", tuneGrid = data.frame(k = 1:10), trControl = fitControl)
+
+logFit
+
 ```
 
 ### Task 6: Naive Bayes model estemated on training sample
