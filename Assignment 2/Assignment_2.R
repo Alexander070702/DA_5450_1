@@ -14,10 +14,6 @@ churndat$voicemailplan <- ifelse(churndat$voicemailplan == "yes", 1, 0)
 str(churndat)
 
 #Generate appropriate graphs for all variables differentiated into churn vs. no churn.
-# In this order: accountlength, internationalplan, voicemailplan, numbervmailmessages, totaldayminutes, totaleveminutes, totalnightminutes, totalintlcalls, totalintlcharge and numbercustomerservicecalls.
-# Use the ggplot2 package for this task.
-# Seperate the right type of graph for each variable, e.g. histogram for accountlength, barplot for internationalplan, etc.
-
 #accountlength
 ggplot(churndat, aes(x = accountlength, fill = factor(churn))) + geom_histogram(bins = 20, position = "identity") + labs(title = "Account Length", x = "Account Length", y = "Frequency")
 #internationalplan
@@ -38,10 +34,11 @@ ggplot(churndat, aes(x = totalintlcalls, fill = factor(churn))) + geom_histogram
 ggplot(churndat, aes(x = totalintlcharge, fill = factor(churn))) + geom_histogram(bins = 20, position = "identity") + labs(title = "Total International Charge", x = "Total International Charge", y = "Frequency")
 #numbercustomerservicecalls
 ggplot(churndat, aes(x = numbercustomerservicecalls, fill = factor(churn))) + geom_histogram(bins = 20, position = "identity") + labs(title = "Number of Customer Service Calls", x = "Number of Customer Service Calls", y = "Frequency")
-
 # There seems to be a relationship with churn and international plan. If the user has no International plan the churn rate is way lower compared to users with an international plan
 # It is the opposite with the Voicemail Plan, if the user has one the churn rate is lower.
 # Also with a rising number of customer service calls the churn rate seems to go up. 
+# For all the other variables it is difficult to tell and there seems to be no real correlation. 
+
 
 # 2 Splitting the data to training set and test set
 # Split the data into training and testing sets, with 80% for training and 20% for testing
