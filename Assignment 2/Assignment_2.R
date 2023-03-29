@@ -14,40 +14,34 @@ churndat$voicemailplan <- ifelse(churndat$voicemailplan == "yes", 1, 0)
 str(churndat)
 
 #Generate appropriate graphs for all variables differentiated into churn vs. no churn.
-#accountlength 
-ggplot(churndat, aes(x = accountlength, fill = churn)) + geom_histogram(bins = 20, position = "identity") + labs(x = "Account Length", y = "Count", title = "Account Length Distribution")
+# In this order: accountlength, internationalplan, voicemailplan, numbervmailmessages, totaldayminutes, totaleveminutes, totalnightminutes, totalintlcalls, totalintlcharge and numbercustomerservicecalls.
+# Use the ggplot2 package for this task.
+# Seperate the right type of graph for each variable, e.g. histogram for accountlength, barplot for internationalplan, etc.
+
+#accountlength
+ggplot(churndat, aes(x = accountlength, fill = factor(churn))) + geom_histogram(bins = 20, position = "identity") + labs(title = "Account Length", x = "Account Length", y = "Frequency")
 #internationalplan
-ggplot(churndat, aes(x = internationalplan, fill = churn)) + geom_bar(position = "dodge") + labs(x = "International Plan", y = "Count", title = "International Plan Distribution")
+ggplot(churndat, aes(x = internationalplan, fill = factor(churn))) + geom_bar(position = "identity") + labs(title = "International Plan", x = "International Plan", y = "Frequency")
 #voicemailplan
-ggplot(churndat, aes(x = voicemailplan, fill = churn)) + geom_bar(position = "dodge") + labs(x = "Voicemail Plan", y = "Count", title = "Voicemail Plan Distribution")
-#numbercustomerservicecalls
-ggplot(churndat, aes(x = numbercustomerservicecalls, fill = churn)) + geom_histogram(bins = 20, position = "identity") + labs(x = "Number of Customer Service Calls", y = "Count", title = "Number of Customer Service Calls Distribution")
-#totaldayminutes
-ggplot(churndat, aes(x = totaldayminutes, fill = churn)) + geom_histogram(bins = 20, position = "identity") + labs(x = "Total Day Minutes", y = "Count", title = "Total Day Minutes Distribution")
-#totaldaycalls
-ggplot(churndat, aes(x = totaldaycalls, fill = churn)) + geom_histogram(bins = 20, position = "identity") + labs(x = "Total Day Calls", y = "Count", title = "Total Day Calls Distribution")
-#totaldaycharge
-ggplot(churndat, aes(x = totaldaycharge, fill = churn)) + geom_histogram(bins = 20, position = "identity") + labs(x = "Total Day Charge", y = "Count", title = "Total Day Charge Distribution")
-#totaleveminutes
-ggplot(churndat, aes(x = totaleveminutes, fill = churn)) + geom_histogram(bins = 20, position = "identity") + labs(x = "Total Eve Minutes", y = "Count", title = "Total Eve Minutes Distribution")
-#totalevecalls
-ggplot(churndat, aes(x = totalevecalls, fill = churn)) + geom_histogram(bins = 20, position = "identity") + labs(x = "Total Eve Calls", y = "Count", title = "Total Eve Calls Distribution")
-#totalevecharge
-ggplot(churndat, aes(x = totalevecharge, fill = churn)) + geom_histogram(bins = 20, position = "identity") + labs(x = "Total Eve Charge", y = "Count", title = "Total Eve Charge Distribution")
-#totalnightminutes
-ggplot(churndat, aes(x = totalnightminutes, fill = churn)) + geom_histogram(bins = 20, position = "identity") + labs(x = "Total Night Minutes", y = "Count", title = "Total Night Minutes Distribution")
-#totalnightcalls
-ggplot(churndat, aes(x = totalnightcalls, fill = churn)) + geom_histogram(bins = 20, position = "identity") + labs(x = "Total Night Calls", y = "Count", title = "Total Night Calls Distribution")
-#totalnightcharge
-ggplot(churndat, aes(x = totalnightcharge, fill = churn)) + geom_histogram(bins = 20, position = "identity") + labs(x = "Total Night Charge", y = "Count", title = "Total Night Charge Distribution")
-#totalintlcalls
-ggplot(churndat, aes(x = totalintlcalls, fill = churn)) + geom_histogram(bins = 20, position = "identity") + labs(x = "Total Intl Calls", y = "Count", title = "Total Intl Calls Distribution")
-#totalintlcharge
-ggplot(churndat, aes(x = totalintlcharge, fill = churn)) + geom_histogram(bins = 20, position = "identity") + labs(x = "Total Intl Charge", y = "Count", title = "Total Intl Charge Distribution")
+ggplot(churndat, aes(x = voicemailplan, fill = factor(churn))) + geom_bar(position = "identity") + labs(title = "Voicemail Plan", x = "Voicemail Plan", y = "Frequency")
 #numbervmailmessages
-ggplot(churndat, aes(x = numbervmailmessages, fill = churn)) + geom_histogram(bins = 20, position = "identity") + labs(x = "Number of Vmail Messages", y = "Count", title = "Number of Vmail Messages Distribution")
-# Which variables seem to be related to churn?
-# The variables that seem to be related to churn are: internationalplan, voicemailplan, numbervmailmessages, totalintlcalls and numbercustomerservicecalls.
+ggplot(churndat, aes(x = numbervmailmessages, fill = factor(churn))) + geom_histogram(bins = 20, position = "identity") + labs(title = "Number of Voicemail Messages", x = "Number of Voicemail Messages", y = "Frequency")
+#totaldayminutes
+ggplot(churndat, aes(x = totaldayminutes, fill = factor(churn))) + geom_histogram(bins = 20, position = "identity") + labs(title = "Total Day Minutes", x = "Total Day Minutes", y = "Frequency")
+#totaleveminutes
+ggplot(churndat, aes(x = totaleveminutes, fill = factor(churn))) + geom_histogram(bins = 20, position = "identity") + labs(title = "Total Eve Minutes", x = "Total Eve Minutes", y = "Frequency")
+#totalnightminutes
+ggplot(churndat, aes(x = totalnightminutes, fill = factor(churn))) + geom_histogram(bins = 20, position = "identity") + labs(title = "Total Night Minutes", x = "Total Night Minutes", y = "Frequency")
+#totalintlcalls
+ggplot(churndat, aes(x = totalintlcalls, fill = factor(churn))) + geom_histogram(bins = 20, position = "identity") + labs(title = "Total International Calls", x = "Total International Calls", y = "Frequency")
+#totalintlcharge
+ggplot(churndat, aes(x = totalintlcharge, fill = factor(churn))) + geom_histogram(bins = 20, position = "identity") + labs(title = "Total International Charge", x = "Total International Charge", y = "Frequency")
+#numbercustomerservicecalls
+ggplot(churndat, aes(x = numbercustomerservicecalls, fill = factor(churn))) + geom_histogram(bins = 20, position = "identity") + labs(title = "Number of Customer Service Calls", x = "Number of Customer Service Calls", y = "Frequency")
+
+# There seems to be a relationship with churn and international plan. If the user has no International plan the churn rate is way lower compared to users with an international plan
+# It is the opposite with the Voicemail Plan, if the user has one the churn rate is lower.
+# Also with a rising number of customer service calls the churn rate seems to go up. 
 
 # 2 Splitting the data to training set and test set
 # Split the data into training and testing sets, with 80% for training and 20% for testing
