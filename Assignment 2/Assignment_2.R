@@ -60,3 +60,6 @@ cat("Accuracy: ", round(accuracy_step, 4), "\n")
 cat("Sensitivity: ", round(sensitivity_step, 4), "\n")
 cat("Specificity: ", round(specificity_step, 4), "\n")
 
+#6
+library(e1071)
+fit_nb = naiveBayes(churn ~ internationalplan + voicemailplan + numbercustomerservicecalls + totalintlcalls + numbervmailmessages, data = train)
